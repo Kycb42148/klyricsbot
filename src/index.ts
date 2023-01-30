@@ -9,6 +9,8 @@ dotenv.config();
 const bot: Telegraf<Context<Update>> = new Telegraf(process.env.BOT_TOKEN as string);
 const token: string = process.env.GENIUS_TOKEN as string;
 
+bot.start((ctx) => ctx.reply("Hi! I work in inline mode, so try `@klyricsbot <song name>`"));
+
 bot.on("inline_query", (ctx) => {
     search(ctx.update.inline_query.query, token).then(async (result: SearchResult[] | null) => {
         if (!result) return;
