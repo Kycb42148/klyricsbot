@@ -38,10 +38,11 @@ export async function getLyrics(id: string, token: string) {
             $('div[class^="Lyrics__Container"]').each((i, element) => {
                 if ($(element).text().length !== 0) {
                     const html = $(element).html() ?? "";
-                    const snippet = html.replace(/<br>/g, '\n')
-                        .replace(/<(?!\s*br\s*\/?)[^>]+>/gi, '');
 
-                    lyrics += snippet.trim() + '\n\n';
+                    lyrics += html
+                        .replace(/<br>/g, '\n')
+                        .replace(/<(?!\s*br\s*\/?)[^>]+>/gi, '')
+                        .trim() + '\n\n';
                 }
             });
         }

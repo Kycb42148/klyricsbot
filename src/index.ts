@@ -42,7 +42,7 @@ bot.on("inline_query", (ctx) => {
 
 bot.on("chosen_inline_result", async (ctx) => {
     const lyrics = await getLyrics(ctx.chosenInlineResult.result_id.split("|")[1], token);
-    if (lyrics) await bot.telegram.editMessageText(undefined, undefined, ctx.inlineMessageId, (lyrics.length < 4096) ? lyrics : lyrics.substring(0, 4090) + "\n[...]");
+    await bot.telegram.editMessageText(undefined, undefined, ctx.inlineMessageId, (!lyrics) ? "Cannot get lyrics for this song." : (lyrics.length < 4096) ? lyrics : lyrics.substring(0, 4090) + "\n[...]");
 });
 
 bot.launch();
