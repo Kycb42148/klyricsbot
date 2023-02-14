@@ -22,14 +22,18 @@ export async function search(title: string, token: string): Promise<SearchResult
     }
 }
 
-export async function getLyrics(id: string, token: string) {
+export async function getUrl(id: string, token: string): Promise<string> {
+    const reqUrl = infoUrl + id;
+    const headers = {
+        Authorization: 'Bearer ' + token
+    };
+    let data = await axios.get(reqUrl, { headers });
+    return data.data.response.song.url;
+}
+
+export async function getLyrics(url: string): Promise<string> {
     try {
-        const reqUrl = infoUrl + id;
-        const headers = {
-            Authorization: 'Bearer ' + token
-        };
-        let idData = await axios.get(reqUrl, { headers });
-        const { data } = await axios.get(idData.data.response.song.url);
+        const { data } = await axios.get(url);
         const $ = await cheerio.load(data);
 
         let lyrics = $('div[class="lyrics"]').text().trim();
@@ -49,5 +53,6 @@ export async function getLyrics(id: string, token: string) {
         return lyrics.trim();
     } catch (e) {
         console.error(e);
+        return Promise.reject();
     }
 }

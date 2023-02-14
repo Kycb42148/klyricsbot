@@ -2,7 +2,7 @@ import { Context, Telegraf } from "telegraf";
 import { Update, InlineQueryResultArticle} from "typegram";
 import * as dotenv from 'dotenv';
 import { SearchResult } from "./types";
-import { getLyrics, search } from "./lib";
+import { getLyrics, getUrl, search } from "./lib";
 
 dotenv.config();
 
@@ -41,8 +41,17 @@ bot.on("inline_query", (ctx) => {
 });
 
 bot.on("chosen_inline_result", async (ctx) => {
-    const lyrics = await getLyrics(ctx.chosenInlineResult.result_id.split("|")[1], token);
-    await bot.telegram.editMessageText(undefined, undefined, ctx.inlineMessageId, (!lyrics) ? "Cannot get lyrics for this song." : (lyrics.length < 4096) ? lyrics : lyrics.substring(0, 4090) + "\n[...]");
+    const url = await getUrl(ctx.chosenInlineResult.result_id.split("|")[1], token);
+    const lyrics = await getLyrics(url);
+    await bot.telegram.editMessageText(undefined, undefined, ctx.inlineMessageId,
+        (!lyrics) ? "Couldn't get lyrics for this song." : (lyrics.length < 4096) ? lyrics : lyrics.substring(0, 4090) + "\n[...]", {
+        reply_markup: {
+            inline_keyboard: [[{
+                text: "Open on Genius",
+                url: url
+            }]]
+        }
+    });
 });
 
 bot.launch();
