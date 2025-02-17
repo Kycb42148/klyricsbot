@@ -39,7 +39,7 @@ export async function getLyrics(url: string): Promise<string> {
         let lyrics = $('div[class="lyrics"]').text().trim();
         if (!lyrics) {
             lyrics = "";
-            $('div[class^="Lyrics__Container"]').each((i, element) => {
+            $('div[class^="Lyrics-sc-"]').each((i, element) => {
                 if ($(element).text().length !== 0) {
                     const html = $(element).html() ?? "";
 
