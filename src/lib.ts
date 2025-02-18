@@ -1,6 +1,9 @@
 import axios from "axios";
 import * as cheerio from 'cheerio';
-import { SearchResult } from "./types";
+
+import { ParseResult, SearchResult } from "./types";
+
+import { decode } from "html-entities";
 
 const searchUrl = 'https://api.genius.com/search?q=';
 const infoUrl = 'https://api.genius.com/songs/';
@@ -31,26 +34,29 @@ export async function getUrl(id: string, token: string): Promise<string> {
     return data.data.response.song.url;
 }
 
-export async function getLyrics(url: string): Promise<string> {
+export async function parsePage(url: string): Promise<ParseResult> {
     try {
         const { data } = await axios.get(url);
         const $ = await cheerio.load(data);
 
-        let lyrics = $('div[class="lyrics"]').text().trim();
-        if (!lyrics) {
-            lyrics = "";
-            $('div[class^="Lyrics-sc-"]').each((i, element) => {
-                if ($(element).text().length !== 0) {
-                    const html = $(element).html() ?? "";
+        let lyrics = "";
+        $('div[class^="Lyrics-sc-"]').each((i, element) => {
+            if ($(element).text().length !== 0) {
+                const html = $(element).html() ?? "";
 
-                    lyrics += html
-                        .replace(/<br>/g, '\n')
-                        .replace(/<(?!\s*br\s*\/?)[^>]+>/gi, '')
-                        .trim() + '\n\n';
-                }
-            });
+                lyrics += html
+                    .replace(/<br>/g, '\n')
+                    .replace(/<(?!\s*br\s*\/?)[^>]+>/gi, '')
+                    .trim() + '\n\n';
+            }
+        });
+
+        let youtubeUrl = null;
+        let match = $.html().match(/\\"youtubeUrl\\":\\"https:\/\/www\.youtube\.com\/watch\?v=([a-zA-Z0-9]{11})\\"/);
+        if (match) {
+            youtubeUrl = "https://youtu.be/" + match[1];
         }
-        return lyrics.trim();
+        return { lyrics: decode(lyrics).trim(), youtubeUrl: youtubeUrl } as ParseResult;
     } catch (e) {
         console.error(e);
         return Promise.reject();

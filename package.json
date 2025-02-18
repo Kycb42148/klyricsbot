@@ -8,6 +8,7 @@
         "axios": "^1.6.0",
         "cheerio": "^1.0.0-rc.12",
         "dotenv": "^16.0.3",
+        "html-entities": "^2.5.2",
         "telegraf": "^4.11.2"
     },
     "devDependencies": {

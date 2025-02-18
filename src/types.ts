@@ -4,3 +4,8 @@ export type SearchResult = {
     title: string;
     albumArt: string;
 }
+
+export type ParseResult = {
+    lyrics: string;
+    youtubeUrl?: string;
+}
