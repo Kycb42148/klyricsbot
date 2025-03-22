@@ -40,7 +40,7 @@ export async function parsePage(url: string): Promise<ParseResult> {
         const $ = await cheerio.load(data);
 
         let lyrics = "";
-        $('div[class^="Lyrics-sc-"]').each((i, element) => {
+        $('div[class^="Lyrics-sc-"],div[class^="Lyrics__Container-sc-"]').each((i, element) => {
             if ($(element).text().length !== 0) {
                 const html = $(element).html() ?? "";
 
